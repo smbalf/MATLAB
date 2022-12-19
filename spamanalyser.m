@@ -1,3 +1,5 @@
-spam_file = readtable("encodedtexts.csv");
-% 0 = ham, 1 = spam
+% Load the dictionary file
+dictionary = readtable('dictionary.txt');
 
+% Create a bag-of-words model
+bag = bagOfWords(tokenizedText, dictionary);
