@@ -82,6 +82,136 @@ test_labels = dlmread('test_labels.txt', ' ');
 incorrect_classification =  sum(xor(output, test_labels));
 
 %%
-%print error percentage.... 
+%print error/accuracy percentage.... 
 error = incorrect_classification/number_of_test_messages
 accuracy = 1 - error
+
+%0.491
+%0.509
+
+%%
+% probability of respective word in spam/ham
+% Laplace smoothing parameter of 0.5
+prob_token_spam = ( sum(train_matrix(spam_indices, :)) + 0.5) ./ (spam_wc + number_of_tokens);
+prob_token_ham = ( sum(train_matrix(ham_indices, :)) + 0.5) ./ (ham_wc + number_of_tokens);
+
+%%
+% calc prob for ham n spam texts for all texts in test
+% prob_token_spam/ham' transposes row vector to column vector
+prob_a_loga = test_matrix*log(prob_token_spam') + log(prob_spam);
+prob_b_loga = test_matrix*log(prob_token_ham') + log(1-prob_spam);
+
+%%
+output = prob_a_loga > prob_b_loga;
+
+%%
+% load the test_labels text file to compare model to test set values 
+test_labels = dlmread('test_labels.txt', ' ');
+
+%%
+% identify incorrect classified
+incorrect_classification =  sum(xor(output, test_labels));
+
+%%
+%print error/accuracy percentage.... 
+error = incorrect_classification/number_of_test_messages
+accuracy = 1 - error
+
+%0.486
+%0.514
+
+%%
+% probability of respective word in spam/ham
+% Laplace smoothing parameter of 0.5
+prob_token_spam = ( sum(train_matrix(spam_indices, :)) + 1.5) ./ (spam_wc + number_of_tokens);
+prob_token_ham = ( sum(train_matrix(ham_indices, :)) + 1.5) ./ (ham_wc + number_of_tokens);
+
+%%
+% calc prob for ham n spam texts for all texts in test
+% prob_token_spam/ham' transposes row vector to column vector
+prob_a_loga = test_matrix*log(prob_token_spam') + log(prob_spam);
+prob_b_loga = test_matrix*log(prob_token_ham') + log(1-prob_spam);
+
+%%
+output = prob_a_loga > prob_b_loga;
+
+%%
+% load the test_labels text file to compare model to test set values 
+test_labels = dlmread('test_labels.txt', ' ');
+
+%%
+% identify incorrect classified
+incorrect_classification =  sum(xor(output, test_labels));
+
+%%
+%print error/accuracy percentage.... 
+error = incorrect_classification/number_of_test_messages
+accuracy = 1 - error
+
+%0.4955
+%0.5045
+
+%%
+% probability of respective word in spam/ham
+% Laplace smoothing parameter of 0.5
+prob_token_spam = ( sum(train_matrix(spam_indices, :)) + 5) ./ (spam_wc + number_of_tokens);
+prob_token_ham = ( sum(train_matrix(ham_indices, :)) + 5) ./ (ham_wc + number_of_tokens);
+
+%%
+% calc prob for ham n spam texts for all texts in test
+% prob_token_spam/ham' transposes row vector to column vector
+prob_a_loga = test_matrix*log(prob_token_spam') + log(prob_spam);
+prob_b_loga = test_matrix*log(prob_token_ham') + log(1-prob_spam);
+
+%%
+output = prob_a_loga > prob_b_loga;
+
+%%
+% load the test_labels text file to compare model to test set values 
+test_labels = dlmread('test_labels.txt', ' ');
+
+%%
+% identify incorrect classified
+incorrect_classification =  sum(xor(output, test_labels));
+
+%%
+%print error/accuracy percentage.... 
+error = incorrect_classification/number_of_test_messages
+accuracy = 1 - error
+
+%0.5114
+%0.4887
+
+%%
+%
+% RANDOM FOREST
+%
+
+%%
+% Convert training labels to categorical array
+RFtrain_labels = categorical(train_labels);
+
+%%
+% Create a random forest classifier with 100 decision trees
+B = TreeBagger(100,train_matrix, RFtrain_labels);
+
+%%
+test_matrix_full = full(test_matrix);
+
+%%
+% Make predictions on test data
+[predictions,scores] = B.predict(test_matrix_full);
+
+%%
+% Convert test labels to categorical array
+test_labels_cat = categorical(test_labels);
+
+% Calculate the confusion matrix
+confusion_matrix = confusionmat(test_labels_cat, predictions);
+
+% Calculate the overall accuracy
+accuracy = sum(diag(confusion_matrix)) / sum(confusion_matrix(:));
+
+% Calculate the precision, recall, and F1 score for each class
+[precision, recall, F1, support] = precision_recall_f1(confusion_matrix);
+
