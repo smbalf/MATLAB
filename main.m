@@ -216,3 +216,24 @@ confusion_matrix = confusionmat(test_labels_cat, pred_cat);
 % Calculate the overall accuracy
 accuracy = sum(diag(confusion_matrix)) / sum(confusion_matrix(:))
 
+%%
+% Define the labels for TP, FP, FN, TN
+labels = {'True Positives', 'False Positives', 'False Negatives', 'True Negatives'};
+
+% Extract the values for TP, FP, FN, TN from the confusion matrix
+values = [confusion_matrix(1,1), confusion_matrix(1,2), confusion_matrix(2,1), confusion_matrix(2,2)];
+
+% Create the bar plot
+figure;
+bar(values);
+
+% Set the labels for the x-axis
+set(gca, 'XTickLabel', labels);
+
+% Set the axis labels
+xlabel('Prediction');
+ylabel('Count');
+
+% Add a title
+title('Confusion Matrix');
+
