@@ -1,5 +1,3 @@
-import fitcnb.*
-
 %%
 number_of_training_messages = 1046;
 number_of_tokens = 2500;
@@ -32,9 +30,12 @@ ham_wc = sum(message_lengths(ham_indices)); %4241 words
 %spam messages total more words, more than double nonspam word counts
 
 %%
+smoothing_factor = 1;
+
+%%
 % probability of respective word in spam/ham
-prob_token_spam = ( sum(train_matrix(spam_indices, :)) + 1) ./ (spam_wc + number_of_tokens);
-prob_token_ham = ( sum(train_matrix(ham_indices, :)) + 1) ./ (ham_wc + number_of_tokens);
+prob_token_spam = ( sum(train_matrix(spam_indices, :)) + smoothing_factor) ./ (spam_wc + number_of_tokens);
+prob_token_ham = ( sum(train_matrix(ham_indices, :)) + smoothing_factor) ./ (ham_wc + number_of_tokens);
 % the prob should progressively get smaller as the freq_word_list was
 % created in a descending order, may not be 1:1 but should generally follow
 % this order...
@@ -201,17 +202,39 @@ test_matrix_full = full(test_matrix);
 %%
 % Make predictions on test data
 [predictions,scores] = B.predict(test_matrix_full);
+%%
+pred_cat = categorical(predictions);
 
 %%
 % Convert test labels to categorical array
 test_labels_cat = categorical(test_labels);
 
+%%
 % Calculate the confusion matrix
-confusion_matrix = confusionmat(test_labels_cat, predictions);
+confusion_matrix = confusionmat(test_labels_cat, pred_cat);
 
+%%
 % Calculate the overall accuracy
-accuracy = sum(diag(confusion_matrix)) / sum(confusion_matrix(:));
+accuracy = sum(diag(confusion_matrix)) / sum(confusion_matrix(:))
 
-% Calculate the precision, recall, and F1 score for each class
-[precision, recall, F1, support] = precision_recall_f1(confusion_matrix);
+%%
+% Define the labels for TP, FP, FN, TN
+labels = {'True Positives', 'False Positives', 'False Negatives', 'True Negatives'};
+
+% Extract the values for TP, FP, FN, TN from the confusion matrix
+values = [confusion_matrix(1,1), confusion_matrix(1,2), confusion_matrix(2,1), confusion_matrix(2,2)];
+
+% Create the bar plot
+figure;
+bar(values);
+
+% Set the labels for the x-axis
+set(gca, 'XTickLabel', labels);
+
+% Set the axis labels
+xlabel('Prediction');
+ylabel('Count');
+
+% Add a title
+title('Confusion Matrix');
 

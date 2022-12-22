@@ -1,5 +1,3 @@
-import fitcnb.*
-
 %%
 number_of_training_messages = 1046;
 number_of_tokens = 2500;
@@ -32,9 +30,12 @@ ham_wc = sum(message_lengths(ham_indices)); %4241 words
 %spam messages total more words, more than double nonspam word counts
 
 %%
+smoothing_factor = 1;
+
+%%
 % probability of respective word in spam/ham
-prob_token_spam = ( sum(train_matrix(spam_indices, :)) + 1) ./ (spam_wc + number_of_tokens);
-prob_token_ham = ( sum(train_matrix(ham_indices, :)) + 1) ./ (ham_wc + number_of_tokens);
+prob_token_spam = ( sum(train_matrix(spam_indices, :)) + smoothing_factor) ./ (spam_wc + number_of_tokens);
+prob_token_ham = ( sum(train_matrix(ham_indices, :)) + smoothing_factor) ./ (ham_wc + number_of_tokens);
 % the prob should progressively get smaller as the freq_word_list was
 % created in a descending order, may not be 1:1 but should generally follow
 % this order...
@@ -90,10 +91,11 @@ accuracy = 1 - error
 %0.509
 
 %%
+smoothing_factor = 0.5;
+%%
 % probability of respective word in spam/ham
-% Laplace smoothing parameter of 0.5
-prob_token_spam = ( sum(train_matrix(spam_indices, :)) + 0.5) ./ (spam_wc + number_of_tokens);
-prob_token_ham = ( sum(train_matrix(ham_indices, :)) + 0.5) ./ (ham_wc + number_of_tokens);
+prob_token_spam = ( sum(train_matrix(spam_indices, :)) + smoothing_factor) ./ (spam_wc + number_of_tokens);
+prob_token_ham = ( sum(train_matrix(ham_indices, :)) + smoothing_factor) ./ (ham_wc + number_of_tokens);
 
 %%
 % calc prob for ham n spam texts for all texts in test
@@ -121,8 +123,10 @@ accuracy = 1 - error
 %0.514
 
 %%
+smoothing_factor = 1.5;
+
+%%
 % probability of respective word in spam/ham
-% Laplace smoothing parameter of 0.5
 prob_token_spam = ( sum(train_matrix(spam_indices, :)) + 1.5) ./ (spam_wc + number_of_tokens);
 prob_token_ham = ( sum(train_matrix(ham_indices, :)) + 1.5) ./ (ham_wc + number_of_tokens);
 
@@ -152,8 +156,9 @@ accuracy = 1 - error
 %0.5045
 
 %%
+smoothing_factor = 5;
+%%
 % probability of respective word in spam/ham
-% Laplace smoothing parameter of 0.5
 prob_token_spam = ( sum(train_matrix(spam_indices, :)) + 5) ./ (spam_wc + number_of_tokens);
 prob_token_ham = ( sum(train_matrix(ham_indices, :)) + 5) ./ (ham_wc + number_of_tokens);
 
@@ -186,7 +191,7 @@ accuracy = 1 - error
 %
 % RANDOM FOREST
 %
-
+%
 %%
 % Convert training labels to categorical array
 RFtrain_labels = categorical(train_labels);
@@ -236,4 +241,3 @@ ylabel('Count');
 
 % Add a title
 title('Confusion Matrix');
-
